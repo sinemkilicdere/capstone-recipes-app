@@ -1,15 +1,35 @@
-var express = require("express");
-const db = require("../db"); // Ensure this path is correct
+'use strict';
+const { Model } = require('sequelize');
 
-var router = express.Router();
+module.exports = (sequelize, DataTypes) => {
+  class User extends Model {
+    static associate(models) {
+      // define association here
+    }
+  }
 
-const User = db["User"]; // Assuming you have a User model defined in your models/index.js
+  User.init(
+    {
+      firstName: DataTypes.STRING,
+      lastName: DataTypes.STRING,
+      email: {
+        type: DataTypes.STRING,
+        unique: true,
+        allowNull: false,
+        validate: {
+          isEmail: true,
+        },
+      },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+    },
+    {
+      sequelize,
+      modelName: 'User',
+    }
+  );
 
-/* GET users listing. */
-router.get("/", function (req, res, next) {
-  User.findAll().then((users) => {
-    res.json(users);
-  });
-});
-
-module.exports = router;
+  return User;
+};
